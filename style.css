@@ -1,0 +1,533 @@
+/* ============================================
+   STYLE.CSS — Global Styles
+   Tema: Romântico · Dark · Verde & Roxo
+   ============================================ */
+
+/* ─── Google Fonts ─── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap');
+
+/* ─── CSS Variables ─── */
+:root {
+  --green:       #3dffa0;
+  --green-dim:   #1a8c55;
+  --green-glow:  rgba(61, 255, 160, 0.18);
+  --purple:      #c77dff;
+  --purple-dim:  #6a0dad;
+  --purple-glow: rgba(199, 125, 255, 0.18);
+  --bg-deep:     #07080f;
+  --bg-mid:      #0d0f1e;
+  --bg-card:     rgba(255,255,255,0.05);
+  --border:      rgba(255,255,255,0.08);
+  --text:        #e8e4f0;
+  --text-muted:  #8a85a0;
+  --radius:      1.2rem;
+  --radius-sm:   0.6rem;
+  --transition:  0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  --scale: 1;
+  --fs-xs:   calc(0.7rem  * var(--scale));
+  --fs-sm:   calc(0.85rem * var(--scale));
+  --fs-base: calc(1rem    * var(--scale));
+  --fs-lg:   calc(1.2rem  * var(--scale));
+  --fs-xl:   calc(1.6rem  * var(--scale));
+  --fs-2xl:  calc(2.2rem  * var(--scale));
+  --fs-3xl:  calc(3rem    * var(--scale));
+  --fs-4xl:  calc(4rem    * var(--scale));
+
+  --sp-xs:  calc(0.4rem  * var(--scale));
+  --sp-sm:  calc(0.8rem  * var(--scale));
+  --sp-md:  calc(1.4rem  * var(--scale));
+  --sp-lg:  calc(2rem    * var(--scale));
+  --sp-xl:  calc(3rem    * var(--scale));
+  --sp-2xl: calc(4.5rem  * var(--scale));
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text);
+  font-size: var(--fs-base);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Star Background — canvas injetado via JS ─── */
+.stars-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* Sem pseudo-elementos animados: canvas estático é desenhado uma vez */
+}
+
+/* ─── Nebula Blobs — SEM filter:blur, SEM animação contínua ─── */
+/*
+ * filter:blur em elementos grandes é MUITO caro no mobile.
+ * Substituímos por radial-gradient com transparência diretamente no background.
+ * A ilusão de "glow" é mantida com gradientes grandes e opacidade baixa.
+ * Usamos opacity animation (compositor-only) em vez de transform+scale.
+ */
+.nebula {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  will-change: opacity;
+}
+
+.nebula-1 {
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(circle, rgba(107,0,173,0.22) 0%, rgba(107,0,173,0.06) 45%, transparent 70%);
+  top: -20%;
+  left: -20%;
+  animation: nebulaPulse 18s ease-in-out infinite;
+}
+
+.nebula-2 {
+  width: 75vw;
+  height: 75vw;
+  background: radial-gradient(circle, rgba(26,140,85,0.18) 0%, rgba(26,140,85,0.05) 45%, transparent 70%);
+  bottom: -25%;
+  right: -25%;
+  animation: nebulaPulse 22s ease-in-out infinite reverse;
+}
+
+/* Nebula-3 removida — raramente visível e só adiciona custo */
+
+@keyframes nebulaPulse {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1;   }
+}
+
+/* ─── Page Wrapper ─── */
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-lg);
+}
+
+/* ─── Glass Card — sem backdrop-filter ─── */
+/*
+ * backdrop-filter:blur é o maior ofensor de performance no mobile:
+ * força o browser a criar um stacking context composto em CADA frame de scroll.
+ * Substituído por background opaco levemente mais alto.
+ */
+.glass {
+  background: rgba(13, 15, 30, 0.75);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xs);
+  font-family: 'Jost', sans-serif;
+  font-size: var(--fs-base);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: var(--sp-sm) var(--sp-lg);
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn-green {
+  background: linear-gradient(135deg, var(--green-dim), var(--green));
+  color: #07080f;
+  box-shadow: 0 0 20px var(--green-glow), 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.btn-green:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 32px var(--green-glow), 0 8px 20px rgba(0,0,0,0.5);
+}
+
+.btn-purple {
+  background: linear-gradient(135deg, var(--purple-dim), var(--purple));
+  color: #07080f;
+  box-shadow: 0 0 20px var(--purple-glow), 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.btn-purple:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 32px var(--purple-glow), 0 8px 20px rgba(0,0,0,0.5);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  border-color: var(--green);
+  color: var(--green);
+  transform: translateY(-2px);
+}
+
+/* ─── Navigation Bar — sem backdrop-filter ─── */
+.nav {
+  position: fixed;
+  top: var(--sp-md);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-xs) var(--sp-md);
+  /* Opaco o suficiente para dispensar blur */
+  background: rgba(7, 8, 15, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+}
+
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: var(--fs-lg);
+  font-style: italic;
+  background: linear-gradient(90deg, var(--purple), var(--green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-right: var(--sp-sm);
+  white-space: nowrap;
+}
+
+.nav-link {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: var(--sp-xs) var(--sp-sm);
+  border-radius: 100px;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
+}
+
+/* ─── Section Titles ─── */
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: var(--fs-3xl);
+  font-weight: 300;
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: var(--sp-md);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--purple), var(--green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.green-text  { color: var(--green);  }
+.purple-text { color: var(--purple); }
+
+/* ─── Inputs ─── */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
+  width: 100%;
+}
+
+.input-label {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.input-field,
+.select-field {
+  width: 100%;
+  padding: var(--sp-sm) var(--sp-md);
+  font-family: 'Jost', sans-serif;
+  font-size: var(--fs-base);
+  font-weight: 300;
+  color: var(--text);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input-field:focus,
+.select-field:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px var(--green-glow);
+}
+
+.select-field {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a85a0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  cursor: pointer;
+}
+
+.select-field option {
+  background: var(--bg-mid);
+  color: var(--text);
+}
+
+/* ─── Result Box ─── */
+.result-box {
+  background: rgba(13, 15, 30, 0.8);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-lg);
+  margin-top: var(--sp-md);
+  animation: fadeSlideIn 0.35s ease;
+}
+
+.result-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: var(--fs-3xl);
+  font-weight: 400;
+  text-align: center;
+  margin-bottom: var(--sp-sm);
+}
+
+.result-label {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--sp-md);
+}
+
+.result-desc {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ─── Progress Bar ─── */
+.progress-wrap {
+  width: 100%;
+  height: 6px;
+  background: var(--border);
+  border-radius: 100px;
+  overflow: hidden;
+  margin: var(--sp-sm) 0;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--green), var(--purple));
+  transition: width 0.5s ease;
+}
+
+/* ─── Page Transitions — só opacity (compositor-only) ─── */
+.page-transition {
+  animation: pageIn 0.4s ease both;
+}
+
+@keyframes pageIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ─── Divider ─── */
+.divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--purple), var(--green), transparent);
+  margin: var(--sp-md) auto;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb {
+  background: var(--purple-dim);
+  border-radius: 100px;
+}
+
+/* ─── Utility ─── */
+.text-center { text-align: center; }
+.hidden { display: none !important; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.gap-sm { gap: var(--sp-sm); }
+.gap-md { gap: var(--sp-md); }
+.w-full { width: 100%; }
+.mt-sm { margin-top: var(--sp-sm); }
+.mt-md { margin-top: var(--sp-md); }
+.mt-lg { margin-top: var(--sp-lg); }
+
+/* ─── Floating Hearts — só transform+opacity (compositor-only) ─── */
+.hearts-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  contain: layout style;
+}
+
+.heart-particle {
+  position: absolute;
+  bottom: -60px;
+  font-size: 1rem;
+  will-change: transform, opacity;
+  animation: heartRise linear forwards;
+}
+
+/* Usa só transform + opacity: garantia de compositor-only */
+@keyframes heartRise {
+  0%   { transform: translateY(0)       rotate(-8deg);  opacity: 0.5; }
+  15%  { opacity: 0.5; }
+  85%  { opacity: 0.2; }
+  100% { transform: translateY(-105vh)  rotate(8deg);   opacity: 0;   }
+}
+
+/* ─── Tag Pills ─── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--sp-sm);
+  border-radius: 100px;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.pill-green  { background: var(--green-glow);  color: var(--green);  border: 1px solid rgba(61,255,160,0.3); }
+.pill-purple { background: var(--purple-glow); color: var(--purple); border: 1px solid rgba(199,125,255,0.3); }
+.pill-yellow { background: rgba(255,220,61,0.1); color: #ffdc3d; border: 1px solid rgba(255,220,61,0.3); }
+.pill-orange { background: rgba(255,140,61,0.1); color: #ff8c3d; border: 1px solid rgba(255,140,61,0.3); }
+.pill-red    { background: rgba(255,80,80,0.1);  color: #ff5050; border: 1px solid rgba(255,80,80,0.3); }
+
+/* ─── Tab System ─── */
+.tabs {
+  display: flex;
+  gap: var(--sp-xs);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tab-btn {
+  font-family: 'Jost', sans-serif;
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  padding: var(--sp-xs) var(--sp-md);
+  border-radius: 100px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--purple-dim), var(--purple));
+  color: #fff;
+}
+
+.tab-panel { display: none; width: 100%; }
+.tab-panel.active { display: block; animation: fadeSlideIn 0.25s ease; }
+
+/* ─── Calorie Row ─── */
+.calorie-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  gap: var(--sp-sm);
+  flex-wrap: wrap;
+}
+
+.calorie-row-name {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 120px;
+}
+
+.calorie-row-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: var(--fs-lg);
+  color: var(--green);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 600px) {
+  .nav { padding: var(--sp-xs) var(--sp-sm); gap: var(--sp-xs); }
+  .nav-logo { font-size: var(--fs-base); }
+  /* No mobile desativa corações para zero custo extra */
+  .hearts-container { display: none; }
+}

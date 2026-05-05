@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para Você ♥</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ─── Main page ─── */
+    .main-page {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: calc(var(--sp-2xl) + 40px) var(--sp-lg) var(--sp-xl);
+      gap: var(--sp-xl);
+    }
+
+    /* Header */
+    .main-header {
+      text-align: center;
+      max-width: 560px;
+    }
+
+    .tagline {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: var(--sp-sm);
+    }
+
+    .main-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 7vmin, 4.5rem);
+      font-weight: 300;
+      line-height: 1.15;
+      margin-bottom: var(--sp-sm);
+    }
+
+    .main-subtitle {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* Cards de navegação */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+      gap: var(--sp-md);
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .nav-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: var(--sp-lg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      overflow: hidden;
+      min-height: clamp(200px, 30vmin, 280px);
+      transition: var(--transition);
+    }
+
+    .nav-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--card-grad, linear-gradient(135deg, rgba(199,125,255,0.06), transparent));
+      transition: opacity 0.4s;
+    }
+
+    .nav-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      border-color: var(--card-accent, var(--purple));
+      box-shadow:
+        0 0 40px var(--card-glow, var(--purple-glow)),
+        0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .nav-card:hover::before { opacity: 2; }
+
+    /* Card — História */
+    .card-historia {
+      --card-accent: var(--purple);
+      --card-glow: var(--purple-glow);
+      --card-grad: linear-gradient(135deg, rgba(199,125,255,0.08), rgba(107,0,173,0.04));
+    }
+
+    /* Card — Saúde */
+    .card-saude {
+      --card-accent: var(--green);
+      --card-glow: var(--green-glow);
+      --card-grad: linear-gradient(135deg, rgba(61,255,160,0.08), rgba(26,140,85,0.04));
+    }
+
+    /* Ícone grande do card */
+    .card-icon {
+      position: absolute;
+      top: var(--sp-md);
+      right: var(--sp-md);
+      font-size: clamp(3.5rem, 10vmin, 6rem);
+      opacity: 0.15;
+      transition: opacity 0.3s, transform 0.3s;
+      line-height: 1;
+    }
+
+    .nav-card:hover .card-icon {
+      opacity: 0.3;
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    .card-chip {
+      font-size: var(--fs-xs);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--card-accent, var(--purple));
+      margin-bottom: var(--sp-sm);
+      font-weight: 500;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 5vmin, 2.8rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: var(--sp-xs);
+    }
+
+    .card-desc {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .card-arrow {
+      margin-top: var(--sp-md);
+      font-size: var(--fs-base);
+      color: var(--card-accent, var(--purple));
+      display: flex;
+      align-items: center;
+      gap: var(--sp-xs);
+      font-size: var(--fs-sm);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: gap 0.3s;
+    }
+
+    .nav-card:hover .card-arrow { gap: var(--sp-sm); }
+
+    /* Footer decorativo */
+    .main-footer {
+      text-align: center;
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+    }
+
+    /* Decoração lateral */
+    .deco-line {
+      position: fixed;
+      top: 50%;
+      width: 1px;
+      height: 30vh;
+      transform: translateY(-50%);
+      background: linear-gradient(transparent, var(--purple-dim), var(--green-dim), transparent);
+      opacity: 0.3;
+    }
+    .deco-line-left  { left: var(--sp-lg); }
+    .deco-line-right { right: var(--sp-lg); }
+
+    @media (max-width: 500px) {
+      .deco-line { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Backgrounds -->
+  <div class="stars-bg" aria-hidden="true"></div>
+  <div class="nebula nebula-1" aria-hidden="true"></div>
+  <div class="nebula nebula-2" aria-hidden="true"></div>
+  <div class="hearts-container" aria-hidden="true"></div>
+
+  <!-- Decoração lateral -->
+  <div class="deco-line deco-line-left"  aria-hidden="true"></div>
+  <div class="deco-line deco-line-right" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+  <nav class="nav" aria-label="Navegação principal">
+    <span class="nav-logo">♥ Amor</span>
+    <a href="index.html"   class="nav-link" data-nav="index.html">Início</a>
+    <a href="historia.html" class="nav-link" data-nav="historia.html">História</a>
+    <a href="saude.html"   class="nav-link" data-nav="saude.html">Saúde</a>
+  </nav>
+
+  <!-- Conteúdo principal -->
+  <main class="main-page">
+
+    <!-- Cabeçalho -->
+    <header class="main-header">
+      <p class="tagline">Um lugar só para nós</p>
+      <h1 class="main-title">
+        Para <span class="gradient-text">você</span>,<br>com amor
+      </h1>
+      <div class="divider"></div>
+      <p class="main-subtitle">
+        Escolha um dos mundos abaixo — um feito de palavras e sentimentos,<br>
+        o outro feito de números e cuidado.
+      </p>
+    </header>
+
+    <!-- Cards -->
+    <div class="cards-grid">
+
+      <!-- Card História -->
+      <a href="historia.html" class="nav-card card-historia" data-nav="historia.html">
+        <span class="card-icon">✦</span>
+        <span class="card-chip">Palavras &amp; Sentimentos</span>
+        <h2 class="card-title">História</h2>
+        <p class="card-desc">
+          Uma declaração escrita do fundo do coração.<br>
+          Palavras que não cabem em mensagem.
+        </p>
+        <div class="card-arrow">
+          Ler agora <span>→</span>
+        </div>
+      </a>
+
+      <!-- Card Saúde -->
+      <a href="saude.html" class="nav-card card-saude" data-nav="saude.html">
+        <span class="card-icon">◈</span>
+        <span class="card-chip">Números &amp; Cuidado</span>
+        <h2 class="card-title">Saúde</h2>
+        <p class="card-desc">
+          IMC, percentual de gordura e gasto calórico.<br>
+          Cuide-se com informação de qualidade.
+        </p>
+        <div class="card-arrow">
+          Calcular <span>→</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Rodapé discreto -->
+    <footer class="main-footer">
+      feito com ♥ · para você
+    </footer>
+
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      /* Clique nos cards navega com fade */
+      document.querySelectorAll('[data-nav]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.preventDefault();
+          navigateTo(el.dataset.nav);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

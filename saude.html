@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saúde ◈</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ─── Saúde Page ─── */
+    .saude-page {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      padding: calc(var(--sp-2xl) + 60px) var(--sp-lg) var(--sp-2xl);
+    }
+
+    .saude-inner {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .saude-eyebrow {
+      font-size: var(--fs-xs);
+      color: var(--green);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: var(--sp-sm);
+      font-weight: 500;
+    }
+
+    .saude-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 7vmin, 4.5rem);
+      font-weight: 300;
+      text-align: center;
+      line-height: 1.1;
+      margin-bottom: var(--sp-xs);
+    }
+
+    .saude-subtitle {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: var(--sp-xl);
+    }
+
+    /* Tabs container */
+    .tabs-wrapper {
+      margin-bottom: var(--sp-lg);
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Card de formulário */
+    .form-card {
+      background: rgba(13, 15, 30, 0.85);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--sp-lg);
+    }
+
+    .form-card::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--green), var(--purple));
+      border-radius: 100px;
+      margin-bottom: var(--sp-md);
+    }
+
+    /* Grid de inputs */
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+      gap: var(--sp-md);
+      margin-bottom: var(--sp-lg);
+    }
+
+    .inputs-grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+    }
+
+    /* Botão calcular */
+    .btn-calcular {
+      width: 100%;
+      padding: var(--sp-sm);
+      font-size: var(--fs-base);
+    }
+
+    /* ─── Resultado IMC ─── */
+    .imc-gauge {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto var(--sp-md);
+    }
+
+    .imc-scale {
+      display: flex;
+      height: 10px;
+      border-radius: 100px;
+      overflow: hidden;
+      margin-bottom: var(--sp-xs);
+      gap: 2px;
+    }
+
+    .imc-seg {
+      flex: 1;
+      border-radius: 100px;
+    }
+
+    .seg-bp   { background: #60cfff; }
+    .seg-ok   { background: var(--green); }
+    .seg-sp   { background: #ffdc3d; }
+    .seg-ob1  { background: #ff9a3d; }
+    .seg-ob2  { background: #ff6060; }
+    .seg-ob3  { background: #ff3030; }
+
+    .imc-pointer {
+      position: absolute;
+      top: -4px;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      border: 3px solid var(--green);
+      transform: translateX(-50%);
+      box-shadow: 0 0 12px rgba(61,255,160,0.5);
+      transition: left 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .imc-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      margin-top: var(--sp-xs);
+    }
+
+    /* ─── Percentual de gordura ─── */
+    .fat-arc {
+      width: 180px;
+      height: 90px;
+      position: relative;
+      margin: 0 auto var(--sp-md);
+    }
+
+    .fat-arc svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─── TMB Cards ─── */
+    .tmb-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-sm);
+      margin: var(--sp-md) 0;
+    }
+
+    @media (max-width: 480px) {
+      .tmb-cards { grid-template-columns: 1fr; }
+    }
+
+    .tmb-card {
+      text-align: center;
+      padding: var(--sp-md) var(--sp-sm);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      transition: var(--transition);
+    }
+
+    .tmb-card:hover {
+      border-color: var(--green-dim);
+      background: var(--green-glow);
+    }
+
+    .tmb-level {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--sp-xs);
+    }
+
+    .tmb-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.4rem, 4vmin, 2rem);
+      color: var(--green);
+      font-weight: 400;
+    }
+
+    .tmb-unit {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+    }
+
+    .tmb-mult {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ─── Atividades ─── */
+    .activities-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-sm);
+      margin-top: var(--sp-md);
+    }
+
+    /* Aviso neutro */
+    .notice {
+      display: flex;
+      gap: var(--sp-sm);
+      align-items: flex-start;
+      padding: var(--sp-sm) var(--sp-md);
+      border-radius: var(--radius-sm);
+      background: rgba(61,255,160,0.04);
+      border: 1px solid rgba(61,255,160,0.12);
+      margin-top: var(--sp-md);
+    }
+
+    .notice-icon { font-size: var(--fs-lg); flex-shrink: 0; }
+    .notice-text { font-size: var(--fs-sm); color: var(--text-muted); line-height: 1.7; }
+
+    /* Voltar */
+    .back-wrap { text-align: center; margin-top: var(--sp-xl); }
+
+    /* Input de sexo como botões */
+    .sex-toggle {
+      display: flex;
+      gap: var(--sp-xs);
+    }
+
+    .sex-btn {
+      flex: 1;
+      padding: var(--sp-sm);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'Jost', sans-serif;
+      font-size: var(--fs-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .sex-btn.active {
+      background: var(--green-glow);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* Checkbox-like para sexo no fat */
+    .fat-sex-toggle { display: flex; gap: var(--sp-xs); }
+
+    /* Hip field (só para mulheres) */
+    .hip-field { transition: opacity 0.3s, max-height 0.4s; overflow: hidden; }
+    .hip-field.hidden-soft { opacity: 0; max-height: 0; pointer-events: none; }
+    .hip-field.visible-soft { opacity: 1; max-height: 200px; }
+  </style>
+</head>
+<body>
+
+  <div class="stars-bg" aria-hidden="true"></div>
+  <div class="nebula nebula-2" aria-hidden="true"></div>
+  <div class="nebula nebula-3" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+  <nav class="nav" aria-label="Navegação principal">
+    <span class="nav-logo">♥ Amor</span>
+    <a href="index.html"    class="nav-link" data-nav="index.html">Início</a>
+    <a href="main.html"     class="nav-link" data-nav="main.html">Menu</a>
+    <a href="historia.html" class="nav-link" data-nav="historia.html">História</a>
+    <a href="saude.html"    class="nav-link active">Saúde</a>
+  </nav>
+
+  <main class="saude-page">
+    <div class="saude-inner">
+
+      <!-- Header -->
+      <p class="saude-eyebrow">Cuidando de você</p>
+      <h1 class="saude-title">
+        Saúde em <span class="gradient-text">Números</span>
+      </h1>
+      <p class="saude-subtitle">
+        Informação de qualidade — sem julgamentos, só cuidado.
+      </p>
+
+      <!-- Tabs -->
+      <div class="tabs-wrapper">
+        <div class="tabs" role="tablist" aria-label="Ferramentas de saúde">
+          <button class="tab-btn active" role="tab" aria-selected="true"  data-tab="imc">IMC Completo</button>
+          <button class="tab-btn"        role="tab" aria-selected="false" data-tab="fat">% Gordura</button>
+          <button class="tab-btn"        role="tab" aria-selected="false" data-tab="cal">Gasto Calórico</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           TAB 1 — IMC
+      ══════════════════════════════════ -->
+      <div class="tab-panel active" id="tab-imc" role="tabpanel">
+        <div class="form-card">
+
+          <div class="inputs-grid">
+            <div class="input-group">
+              <label class="input-label" for="imc-peso">Peso (kg)</label>
+              <input class="input-field" type="number" id="imc-peso" placeholder="Ex: 70" min="20" max="300" step="0.1" />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="imc-altura">Altura (cm)</label>
+              <input class="input-field" type="number" id="imc-altura" placeholder="Ex: 170" min="100" max="250" />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="imc-idade">Idade (anos)</label>
+              <input class="input-field" type="number" id="imc-idade" placeholder="Ex: 25" min="5" max="120" />
+            </div>
+            <div class="input-group">
+              <label class="input-label">Sexo</label>
+              <div class="sex-toggle" id="imc-sex-toggle">
+                <button class="sex-btn active" data-val="M">♂ Masculino</button>
+                <button class="sex-btn"        data-val="F">♀ Feminino</button>
+              </div>
+              <input type="hidden" id="imc-sexo" value="M" />
+            </div>
+          </div>
+
+          <button class="btn btn-green btn-calcular" id="btn-calc-imc">
+            Calcular IMC
+          </button>
+
+          <!-- Resultado -->
+          <div id="imc-result" class="result-box hidden">
+            <p class="result-label">Índice de Massa Corporal</p>
+            <p class="result-value" id="imc-valor">—</p>
+            <div style="display:flex;justify-content:center;margin-bottom:var(--sp-md)">
+              <span class="pill" id="imc-pill">—</span>
+            </div>
+
+            <!-- Escala visual -->
+            <div class="imc-gauge" aria-hidden="true">
+              <div class="imc-scale">
+                <div class="imc-seg seg-bp"></div>
+                <div class="imc-seg seg-ok"></div>
+                <div class="imc-seg seg-sp"></div>
+                <div class="imc-seg seg-ob1"></div>
+                <div class="imc-seg seg-ob2"></div>
+                <div class="imc-seg seg-ob3"></div>
+              </div>
+              <div class="imc-pointer" id="imc-pointer"></div>
+              <div class="imc-labels">
+                <span>15</span>
+                <span>18,5</span>
+                <span>25</span>
+                <span>30</span>
+                <span>35</span>
+                <span>40+</span>
+              </div>
+            </div>
+
+            <p class="result-desc" id="imc-desc"></p>
+
+            <div class="notice" style="margin-top:var(--sp-md)">
+              <span class="notice-icon">ℹ️</span>
+              <p class="notice-text">
+                <strong style="color:var(--green)">Nota importante:</strong>
+                o IMC é um índice simples, mas possui limitações reais. Ele não diferencia massa muscular
+                de gordura — atletas e pessoas com alta massa muscular costumam ter IMC elevado sem isso
+                representar risco à saúde. Sempre consulte um profissional para avaliação completa.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           TAB 2 — GORDURA CORPORAL
+      ══════════════════════════════════ -->
+      <div class="tab-panel" id="tab-fat" role="tabpanel">
+        <div class="form-card">
+
+          <div class="inputs-grid inputs-grid-3">
+            <div class="input-group">
+              <label class="input-label" for="fat-peso">Peso (kg)</label>
+              <input class="input-field" type="number" id="fat-peso" placeholder="Ex: 70" min="20" max="300" step="0.1" />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="fat-altura">Altura (cm)</label>
+              <input class="input-field" type="number" id="fat-altura" placeholder="Ex: 170" min="100" max="250" />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="fat-cintura">Cintura (cm)</label>
+              <input class="input-field" type="number" id="fat-cintura" placeholder="Ex: 80" min="40" max="200" step="0.5" />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="fat-pescoco">Pescoço (cm)</label>
+              <input class="input-field" type="number" id="fat-pescoco" placeholder="Ex: 37" min="20" max="80" step="0.5" />
+            </div>
+            <div class="input-group hip-field hidden-soft" id="hip-group">
+              <label class="input-label" for="fat-quadril">Quadril (cm)</label>
+              <input class="input-field" type="number" id="fat-quadril" placeholder="Ex: 95" min="50" max="200" step="0.5" />
+            </div>
+            <div class="input-group">
+              <label class="input-label">Sexo</label>
+              <div class="sex-toggle" id="fat-sex-toggle">
+                <button class="sex-btn active" data-val="M">♂ Masc.</button>
+                <button class="sex-btn"        data-val="F">♀ Fem.</button>
+              </div>
+              <input type="hidden" id="fat-sexo" value="M" />
+            </div>
+          </div>
+
+          <button class="btn btn-green btn-calcular" id="btn-calc-fat">
+            Calcular % Gordura
+          </button>
+
+          <!-- Resultado gordura -->
+          <div id="fat-result" class="result-box hidden">
+            <p class="result-label">Percentual de Gordura Corporal Estimado</p>
+            <p class="result-value gradient-text" id="fat-valor">—</p>
+            <div style="display:flex;justify-content:center;gap:var(--sp-xs);margin-bottom:var(--sp-md)">
+              <span class="pill" id="fat-pill">—</span>
+            </div>
+
+            <!-- Barra de progresso -->
+            <div class="progress-wrap" aria-hidden="true">
+              <div class="progress-bar" id="fat-bar" style="width:0%"></div>
+            </div>
+
+            <p class="result-desc" id="fat-faixas" style="text-align:left;margin-top:var(--sp-sm)"></p>
+
+            <div class="notice">
+              <span class="notice-icon">ℹ️</span>
+              <p class="notice-text">
+                Estimativa pelo <strong style="color:var(--green)">Método da Marinha dos EUA</strong> —
+                usa medidas externas e tem margem de erro de ±3%. Para precisão máxima, utilize DEXA ou
+                hidrodensitometria com orientação profissional.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           TAB 3 — GASTO CALÓRICO
+      ══════════════════════════════════ -->
+      <div class="tab-panel" id="tab-cal" role="tabpanel">
+        <div class="form-card">
+
+          <div class="inputs-grid">
+            <div class="input-group">
+              <label class="input-label" for="cal-peso">Peso (kg)</label>
+              <input class="input-field" type="number" id="cal-peso" placeholder="Ex: 70" min="20" max="300" step="0.1" />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="cal-altura">Altura (cm)</label>
+              <input class="input-field" type="number" id="cal-altura" placeholder="Ex: 170" min="100" max="250" />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="cal-idade">Idade (anos)</label>
+              <input class="input-field" type="number" id="cal-idade" placeholder="Ex: 25" min="5" max="120" />
+            </div>
+            <div class="input-group">
+              <label class="input-label">Sexo</label>
+              <div class="sex-toggle" id="cal-sex-toggle">
+                <button class="sex-btn active" data-val="M">♂ Masculino</button>
+                <button class="sex-btn"        data-val="F">♀ Feminino</button>
+              </div>
+              <input type="hidden" id="cal-sexo" value="M" />
+            </div>
+          </div>
+
+          <button class="btn btn-green btn-calcular" id="btn-calc-cal">
+            Calcular Gasto Calórico
+          </button>
+
+          <!-- Resultado calórico -->
+          <div id="cal-result" class="result-box hidden">
+            <p class="result-label">Taxa Metabólica Basal (TMB)</p>
+            <p class="result-value gradient-text" id="cal-tmb">—</p>
+            <p class="result-desc" style="margin-bottom:var(--sp-md)">
+              Energia mínima para manter as funções vitais em repouso total.
+            </p>
+
+            <!-- Gasto diário estimado -->
+            <p class="result-label" style="margin-bottom:var(--sp-sm)">Gasto Diário Estimado</p>
+            <div class="tmb-cards">
+              <div class="tmb-card">
+                <p class="tmb-level">🚶 Leve</p>
+                <p class="tmb-value" id="cal-leve">—</p>
+                <p class="tmb-unit">kcal/dia</p>
+                <p class="tmb-mult">TMB × 1,375</p>
+              </div>
+              <div class="tmb-card">
+                <p class="tmb-level">🏃 Moderado</p>
+                <p class="tmb-value" id="cal-mod">—</p>
+                <p class="tmb-unit">kcal/dia</p>
+                <p class="tmb-mult">TMB × 1,55</p>
+              </div>
+              <div class="tmb-card">
+                <p class="tmb-level">💪 Intenso</p>
+                <p class="tmb-value" id="cal-int">—</p>
+                <p class="tmb-unit">kcal/dia</p>
+                <p class="tmb-mult">TMB × 1,725</p>
+              </div>
+            </div>
+
+            <!-- Exemplos práticos (30 min cada) -->
+            <p class="result-label" style="margin:var(--sp-md) 0 var(--sp-sm)">
+              Exemplos de Atividade (por 30 minutos)
+            </p>
+            <div class="activities-list" id="activities-list"></div>
+
+            <div class="notice">
+              <span class="notice-icon">🔥</span>
+              <p class="notice-text">
+                Fórmula <strong style="color:var(--green)">Mifflin–St Jeor</strong>, uma das mais precisas na literatura.
+                Valores são estimativas — variações metabólicas individuais existem.
+                Sempre consulte um nutricionista para plano alimentar personalizado.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voltar -->
+      <div class="back-wrap">
+        <button class="btn btn-ghost" data-nav="main.html">← Voltar ao menu</button>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+  /* ─── Saúde Page Logic ─── */
+  document.addEventListener('DOMContentLoaded', () => {
+
+    /* ── Navegação por tabs ── */
+    const tabBtns   = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+        tabPanels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected','true');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    /* ── Sex toggles genérico ── */
+    function initSexToggle(toggleId, hiddenId, onChangeCallback) {
+      const toggle = document.getElementById(toggleId);
+      const hidden = document.getElementById(hiddenId);
+      if (!toggle) return;
+      toggle.querySelectorAll('.sex-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          toggle.querySelectorAll('.sex-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          hidden.value = btn.dataset.val;
+          if (onChangeCallback) onChangeCallback(btn.dataset.val);
+        });
+      });
+    }
+
+    initSexToggle('imc-sex-toggle', 'imc-sexo');
+    initSexToggle('fat-sex-toggle', 'fat-sexo', (sex) => {
+      /* Mostra/esconde campo de quadril para mulheres */
+      const hipGroup = document.getElementById('hip-group');
+      if (sex === 'F') {
+        hipGroup.classList.remove('hidden-soft');
+        hipGroup.classList.add('visible-soft');
+      } else {
+        hipGroup.classList.remove('visible-soft');
+        hipGroup.classList.add('hidden-soft');
+      }
+    });
+    initSexToggle('cal-sex-toggle', 'cal-sexo');
+
+    /* ── Helper: valida campo numérico ── */
+    function getVal(id) {
+      const el = document.getElementById(id);
+      const v = parseFloat(el.value);
+      if (!el.value || isNaN(v)) {
+        el.style.borderColor = 'rgba(255,80,80,0.6)';
+        el.focus();
+        return null;
+      }
+      el.style.borderColor = '';
+      return v;
+    }
+
+    function showEl(id) { document.getElementById(id).classList.remove('hidden'); }
+
+    /* ─────────────────────────────────
+       CALCULADORA 1 — IMC
+    ───────────────────────────────── */
+    document.getElementById('btn-calc-imc').addEventListener('click', () => {
+      const peso   = getVal('imc-peso');
+      const altura = getVal('imc-altura');
+      const idade  = getVal('imc-idade');
+      if (peso === null || altura === null || idade === null) return;
+
+      const alturaM = altura / 100;
+      const imc = calcIMC(peso, alturaM);
+      const cat = imcCategory(imc);
+
+      /* Valor */
+      document.getElementById('imc-valor').textContent = fmtNum(imc);
+      /* Pill */
+      const pillEl = document.getElementById('imc-pill');
+      pillEl.textContent = cat.label;
+      pillEl.className = 'pill ' + cat.pill;
+      /* Descrição */
+      document.getElementById('imc-desc').textContent = cat.note;
+
+      /* Ponteiro na escala (15–40+, clamp) */
+      const pct = Math.max(0, Math.min(100, ((imc - 15) / 25) * 100));
+      document.getElementById('imc-pointer').style.left = pct + '%';
+
+      showEl('imc-result');
+    });
+
+    /* ─────────────────────────────────
+       CALCULADORA 2 — % GORDURA
+    ───────────────────────────────── */
+    document.getElementById('btn-calc-fat').addEventListener('click', () => {
+      const peso    = getVal('fat-peso');
+      const altura  = getVal('fat-altura');
+      const cintura = getVal('fat-cintura');
+      const pescoco = getVal('fat-pescoco');
+      const sexo    = document.getElementById('fat-sexo').value;
+
+      if (peso === null || altura === null || cintura === null || pescoco === null) return;
+
+      let quadril = null;
+      if (sexo === 'F') {
+        quadril = getVal('fat-quadril');
+        if (quadril === null) return;
+      }
+
+      if (cintura <= pescoco) {
+        document.getElementById('fat-cintura').style.borderColor = 'rgba(255,80,80,0.6)';
+        alert('A medida da cintura deve ser maior que a do pescoço.');
+        return;
+      }
+
+      const pct = calcBodyFat(altura, cintura, pescoco, sexo, quadril);
+      const cat = bodyFatCategory(pct, sexo);
+
+      document.getElementById('fat-valor').textContent = fmtNum(pct) + '%';
+      const fatPill = document.getElementById('fat-pill');
+      fatPill.textContent = cat.label;
+      fatPill.className = 'pill ' + cat.pill;
+
+      /* Barra (0–50%) */
+      const barPct = Math.min(100, (pct / 50) * 100);
+      document.getElementById('fat-bar').style.width = barPct + '%';
+
+      /* Faixas interpretativas */
+      const faixasEl = document.getElementById('fat-faixas');
+      if (sexo === 'M') {
+        faixasEl.innerHTML = `
+          Faixas de referência masculina:<br>
+          <span style="color:var(--text-muted)">
+          Essencial: 2–5% &nbsp;|&nbsp; Atlético: 6–13% &nbsp;|&nbsp;
+          Boa forma: 14–17% &nbsp;|&nbsp; Aceitável: 18–24% &nbsp;|&nbsp; Alto: 25%+
+          </span>
+        `;
+      } else {
+        faixasEl.innerHTML = `
+          Faixas de referência feminina:<br>
+          <span style="color:var(--text-muted)">
+          Essencial: 10–13% &nbsp;|&nbsp; Atlético: 14–20% &nbsp;|&nbsp;
+          Boa forma: 21–24% &nbsp;|&nbsp; Aceitável: 25–31% &nbsp;|&nbsp; Alto: 32%+
+          </span>
+        `;
+      }
+
+      showEl('fat-result');
+    });
+
+    /* ─────────────────────────────────
+       CALCULADORA 3 — GASTO CALÓRICO
+    ───────────────────────────────── */
+    document.getElementById('btn-calc-cal').addEventListener('click', () => {
+      const peso   = getVal('cal-peso');
+      const altura = getVal('cal-altura');
+      const idade  = getVal('cal-idade');
+      const sexo   = document.getElementById('cal-sexo').value;
+
+      if (peso === null || altura === null || idade === null) return;
+
+      const tmb = calcTMB(peso, altura, idade, sexo);
+
+      document.getElementById('cal-tmb').textContent = Math.round(tmb) + ' kcal';
+
+      /* Fatores de atividade (PAL) */
+      document.getElementById('cal-leve').textContent = Math.round(tmb * 1.375);
+      document.getElementById('cal-mod').textContent  = Math.round(tmb * 1.55);
+      document.getElementById('cal-int').textContent  = Math.round(tmb * 1.725);
+
+      /* Atividades práticas (30 min) */
+      const acts = calcActivityCalories(peso, [
+        'Caminhada (5 km/h)',
+        'Corrida leve (8 km/h)',
+        'Flexões',
+        'Agachamentos',
+        'Abdominais',
+        'Ciclismo moderado',
+        'Natação',
+      ]);
+
+      const ICONS = {
+        'Caminhada (5 km/h)':   '🚶',
+        'Corrida leve (8 km/h)':'🏃',
+        'Flexões':               '💪',
+        'Agachamentos':          '🦵',
+        'Abdominais':            '🔥',
+        'Ciclismo moderado':     '🚴',
+        'Natação':               '🏊',
+      };
+
+      const list = document.getElementById('activities-list');
+      list.innerHTML = acts.map(a => `
+        <div class="calorie-row">
+          <span class="calorie-row-name">${ICONS[a.name] || '⚡'} ${a.name} <em style="color:var(--text-muted);font-size:var(--fs-xs)">(30 min)</em></span>
+          <span class="calorie-row-val">~${a.kcal} kcal</span>
+        </div>
+      `).join('');
+
+      showEl('cal-result');
+    });
+
+    /* ── Navegação com fade ── */
+    document.querySelectorAll('[data-nav]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        navigateTo(el.dataset.nav);
+      });
+    });
+
+  });
+  </script>
+</body>
+</html>

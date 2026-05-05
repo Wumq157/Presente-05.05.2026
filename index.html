@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amor ♥</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ─── Index-only styles ─── */
+    .index-center {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: var(--sp-lg);
+      text-align: center;
+    }
+
+    /* Anel decorativo de brilho */
+    .glow-ring {
+      position: relative;
+      width: clamp(240px, 50vmin, 380px);
+      height: clamp(240px, 50vmin, 380px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--sp-lg);
+    }
+
+    .glow-ring::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--purple),
+        var(--green),
+        var(--purple)
+      );
+      animation: ringRotate 6s linear infinite;
+    }
+
+    .glow-ring::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: var(--bg-deep);
+    }
+
+    @keyframes ringRotate {
+      to { transform: rotate(360deg); }
+    }
+
+    .heart-icon {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(5rem, 14vmin, 9rem);
+      animation: heartPulse 2.5s ease-in-out infinite;
+      text-shadow: 0 0 40px rgba(199,125,255,0.5);
+      will-change: transform;
+    }
+
+    @keyframes heartPulse {
+      0%, 100% { transform: scale(1);    }
+      50%       { transform: scale(1.12); }
+    }
+
+    .main-question {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.6rem, 6vmin, 3.5rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.25;
+      margin-bottom: var(--sp-xs);
+      text-shadow: 0 0 40px rgba(199,125,255,0.3);
+    }
+
+    .sub-text {
+      font-size: clamp(0.7rem, 2vmin, 0.9rem);
+      color: var(--text-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: var(--sp-xl);
+    }
+
+    /* Botões da pergunta */
+    .answer-buttons {
+      display: flex;
+      gap: var(--sp-md);
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-sim {
+      font-size: clamp(0.9rem, 2.5vmin, 1.2rem);
+      padding: var(--sp-sm) var(--sp-xl);
+    }
+
+    /* Botão "Não" — estilos base; posição via JS */
+    #btn-nao {
+      font-size: clamp(0.9rem, 2.5vmin, 1.2rem);
+      padding: var(--sp-sm) var(--sp-xl);
+      cursor: not-allowed;
+      /* transition desativada no flee, mas transição visual de hover */
+      box-shadow: 0 0 20px rgba(255, 80, 80, 0.2);
+    }
+
+    #btn-nao:hover {
+      transform: none; /* sem efeito hover visual, o JS já cuida */
+    }
+
+    /* Tooltip */
+    .tooltip-hint {
+      position: fixed;
+      bottom: var(--sp-lg);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      font-size: clamp(0.6rem, 1.5vmin, 0.75rem);
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: blink 2.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 1;   }
+    }
+
+    /* Overlay de "parabéns" se clicar em Não */
+    .overlay-message {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(7,8,15,0.97);
+      animation: fadeSlideIn 0.4s ease;
+      padding: var(--sp-lg);
+    }
+
+    .overlay-message h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 8vmin, 4rem);
+      font-style: italic;
+      margin-bottom: var(--sp-sm);
+      text-align: center;
+    }
+
+    .overlay-message p {
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: var(--sp-lg);
+      max-width: 360px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fundo de estrelas -->
+  <div class="stars-bg" aria-hidden="true"></div>
+  <div class="nebula nebula-1" aria-hidden="true"></div>
+  <div class="nebula nebula-2" aria-hidden="true"></div>
+  <div class="nebula nebula-3" aria-hidden="true"></div>
+  <div class="hearts-container" aria-hidden="true"></div>
+
+  <!-- Conteúdo central -->
+  <main class="index-center">
+
+    <!-- Anel + Coração -->
+    <div class="glow-ring" aria-hidden="true">
+      <span class="heart-icon">♥</span>
+    </div>
+
+    <!-- Pergunta principal -->
+    <h1 class="main-question">
+      Eu amo você,<br>você me ama?
+    </h1>
+    <p class="sub-text">uma pergunta sincera</p>
+
+    <!-- Botões de resposta -->
+    <div class="answer-buttons">
+      <a href="main.html" class="btn btn-green btn-sim">
+        ♥ &nbsp;Sim
+      </a>
+      <button id="btn-nao" class="btn btn-outline">
+        Não
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Dica de rodapé -->
+  <p class="tooltip-hint">Tente clicar em "Não"... se conseguir</p>
+
+  <script src="script.js"></script>
+  <script>
+    /* ─── Lógica específica da index ─── */
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const btnNao = document.getElementById('btn-nao');
+      const btnSim = document.querySelector('.btn-sim');
+
+      /* Inicializa botão fugitivo */
+      initFleeButton(btnNao, 150);
+
+      /* Clique no Sim → navega com fade */
+      btnSim.addEventListener('click', e => {
+        e.preventDefault();
+        navigateTo('main.html');
+      });
+
+      /* Se conseguir clicar em Não (raridade!) */
+      btnNao.addEventListener('click', () => {
+        if (btnNao._fleeCleanup) btnNao._fleeCleanup();
+
+        /* Tenta fechar — pode não funcionar em todos os browsers */
+        try { window.close(); } catch(_) {}
+
+        /* Fallback: mensagem de despedida */
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay-message';
+        overlay.innerHTML = `
+          <h2 class="gradient-text">Uau, você conseguiu!</h2>
+          <p>Impressionante... Mas o amor não desiste assim tão fácil. 💜</p>
+          <button class="btn btn-green" id="btn-voltar">
+            ♥ Dar outra chance
+          </button>
+        `;
+        document.body.appendChild(overlay);
+        overlay.querySelector('#btn-voltar').addEventListener('click', () => {
+          overlay.remove();
+          initFleeButton(btnNao, 150);
+        });
+      });
+
+    });
+  </script>
+</body>
+</html>
